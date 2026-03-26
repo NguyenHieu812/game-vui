@@ -1,9 +1,25 @@
+let audioCtx: AudioContext | null = null;
+let raceInterval: NodeJS.Timeout | null = null;
+let raceOsc: OscillatorNode | null = null;
+let raceGain: GainNode | null = null;
+
+const getCtx = () => {
+  if (typeof window === 'undefined') return null;
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (AudioContextClass) audioCtx = new AudioContextClass();
+  }
+  if (audioCtx?.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+};
+
 export const playSound = (type: 'win' | 'tick' | 'quack' | 'shuffle' | 'pop' | 'fail') => {
   try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContextClass) return;
+    const ctx = getCtx();
+    if (!ctx) return;
     
-    const ctx = new AudioContextClass();
     const osc = ctx.createOscillator();
     const gainNode = ctx.createGain();
     
@@ -63,5 +79,55 @@ export const playSound = (type: 'win' | 'tick' | 'quack' | 'shuffle' | 'pop' | '
     }
   } catch (e) {
     console.error("Audio not supported or blocked", e);
+  }
+};
+
+export const startRaceMusic = () => {
+  try {
+    const ctx = getCtx();
+    if (!ctx) return;
+    
+    stopRaceMusic();
+    
+    raceInterval = setInterval(() => {
+      playSound('quack');
+    }, 600);
+    
+    raceOsc = ctx.createOscillator();
+    raceGain = ctx.createGain();
+    raceOsc.type = 'triangle';
+    raceOsc.frequency.setValueAtTime(150, ctx.currentTime);
+    
+    const lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(4, ctx.currentTime);
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.setValueAtTime(10, ctx.currentTime);
+    lfo.connect(lfoGain);
+    lfoGain.connect(raceOsc.frequency);
+    lfo.start();
+    
+    raceGain.gain.setValueAtTime(0.05, ctx.currentTime);
+    raceOsc.connect(raceGain);
+    raceGain.connect(ctx.destination);
+    raceOsc.start();
+  } catch (e) {}
+};
+
+export const stopRaceMusic = () => {
+  if (raceInterval) {
+    clearInterval(raceInterval);
+    raceInterval = null;
+  }
+  if (raceOsc && raceGain) {
+    try {
+      const ctx = getCtx();
+      if (ctx) {
+        raceGain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        raceOsc.stop(ctx.currentTime + 0.5);
+      }
+    } catch (e) {}
+    raceOsc = null;
+    raceGain = null;
   }
 };

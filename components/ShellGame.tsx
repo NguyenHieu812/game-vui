@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, RotateCcw, HelpCircle } from 'lucide-react';
+import { Play, RotateCcw, HelpCircle, BookOpen } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playSound } from '@/lib/sounds';
 
@@ -127,7 +127,7 @@ export default function ShellGame() {
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border-4 border-red-200 p-6 md:p-8 w-full">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
           <h2 className="text-3xl font-bold text-red-600 flex items-center gap-2">
             <HelpCircle className="w-8 h-8" />
@@ -135,22 +135,35 @@ export default function ShellGame() {
           </h2>
           <p className="text-slate-500 font-medium">Theo dõi quả bóng vàng và tìm ra nó!</p>
         </div>
-
-        {gameState === 'setup' && (
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-600">Số cốc:</span>
-            {[3, 4, 5].map(num => (
-              <button
-                key={num}
-                onClick={() => setCupCount(num)}
-                className={`w-10 h-10 rounded-xl font-bold transition-colors ${cupCount === num ? 'bg-red-500 text-white' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
-              >
-                {num}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Instructions */}
+      <div className="bg-red-50 text-red-800 p-4 rounded-2xl mb-6 text-sm border border-red-100">
+        <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" /> Hướng dẫn chơi:
+        </h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Chọn số lượng cốc (3, 4, hoặc 5 cốc) ở góc trên.</li>
+          <li>Ấn <strong>Bắt đầu chơi!</strong> để giấu quả bóng vàng vào một cốc ngẫu nhiên.</li>
+          <li>Tập trung nhìn kỹ các cốc khi chúng xáo trộn vị trí.</li>
+          <li>Khi cốc dừng lại, hãy click vào chiếc cốc mà bạn nghĩ đang giấu quả bóng!</li>
+        </ul>
+      </div>
+
+      {gameState === 'setup' && (
+        <div className="flex items-center gap-2 mb-8">
+          <span className="font-bold text-slate-600">Số cốc:</span>
+          {[3, 4, 5].map(num => (
+            <button
+              key={num}
+              onClick={() => setCupCount(num)}
+              className={`w-10 h-10 rounded-xl font-bold transition-colors ${cupCount === num ? 'bg-red-500 text-white' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="min-h-[300px] flex flex-col items-center justify-center bg-red-50 rounded-3xl border-4 border-red-100 p-8 mb-8 overflow-hidden">
         {gameState === 'setup' ? (

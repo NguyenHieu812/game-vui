@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, RotateCcw, Plus, X, Trophy, Flag } from 'lucide-react';
+import { Play, RotateCcw, Plus, X, Trophy, Flag, BookOpen, Map } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { playSound } from '@/lib/sounds';
+import { playSound, startRaceMusic, stopRaceMusic } from '@/lib/sounds';
+
+type MapType = 'straight' | 'curved' | 'winding';
 
 interface Duck {
   id: string;
@@ -51,6 +53,7 @@ export default function DuckRace() {
   const [newName, setNewName] = useState('');
   const [isRacing, setIsRacing] = useState(false);
   const [winner, setWinner] = useState<Duck | null>(null);
+  const [mapType, setMapType] = useState<MapType>('straight');
   const animationRef = useRef<number | null>(null);
 
   const addDuck = () => {
@@ -91,13 +94,14 @@ export default function DuckRace() {
     
     setWinner(null);
     setIsRacing(true);
-    playSound('quack');
+    startRaceMusic();
   };
 
   const resetRace = () => {
     setIsRacing(false);
     setWinner(null);
     setDucks(ducks.map(d => ({ ...d, progress: 0 })));
+    stopRaceMusic();
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
   };
 
@@ -132,6 +136,7 @@ export default function DuckRace() {
         if (hasWinner && winningDuck) {
           setIsRacing(false);
           setWinner(winningDuck);
+          stopRaceMusic();
           playSound('win');
           triggerConfetti();
           return updatedDucks;
@@ -148,13 +153,24 @@ export default function DuckRace() {
     animationRef.current = requestAnimationFrame(updateRace);
 
     return () => {
+      stopRaceMusic();
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, [isRacing]);
 
+  const getDuckY = (progress: number, mapType: MapType) => {
+    if (mapType === 'curved') {
+      return Math.sin((progress / 100) * Math.PI) * 40;
+    }
+    if (mapType === 'winding') {
+      return Math.sin((progress / 100) * Math.PI * 4) * 25;
+    }
+    return 0;
+  };
+
   return (
     <div className="bg-white rounded-3xl shadow-xl border-4 border-orange-200 p-6 md:p-8 w-full">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
           <h2 className="text-3xl font-bold text-orange-600 flex items-center gap-2">
             <Flag className="w-8 h-8" />
@@ -162,8 +178,23 @@ export default function DuckRace() {
           </h2>
           <p className="text-slate-500 font-medium">Thêm tên người chơi và bắt đầu cuộc đua!</p>
         </div>
+      </div>
 
-        {!isRacing && !winner && (
+      {/* Instructions */}
+      <div className="bg-orange-50 text-orange-800 p-4 rounded-2xl mb-6 text-sm border border-orange-100">
+        <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" /> Hướng dẫn chơi:
+        </h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Thêm tên các chú vịt tham gia (tối đa 8 vịt).</li>
+          <li>Chọn địa hình đường đua (Thẳng, Cong, hoặc Uốn lượn).</li>
+          <li>Ấn <strong>Bắt đầu đua</strong> và cổ vũ cho chú vịt của bạn!</li>
+        </ul>
+      </div>
+
+      {/* Setup Area */}
+      {!isRacing && !winner && (
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex items-center gap-2 w-full md:w-auto">
             <input
               type="text"
@@ -182,10 +213,19 @@ export default function DuckRace() {
               <Plus className="w-6 h-6" />
             </button>
           </div>
-        )}
-      </div>
 
-      {/* Setup Area */}
+          <div className="flex-1 bg-orange-50 p-2 rounded-2xl border-2 border-orange-100 flex items-center gap-2 overflow-x-auto">
+            <span className="font-bold text-orange-600 ml-2 whitespace-nowrap flex items-center gap-1">
+              <Map className="w-4 h-4" /> Địa hình:
+            </span>
+            <button onClick={() => setMapType('straight')} className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors ${mapType === 'straight' ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-orange-600 hover:bg-orange-100'}`}>Đường thẳng</button>
+            <button onClick={() => setMapType('curved')} className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors ${mapType === 'curved' ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-orange-600 hover:bg-orange-100'}`}>Đường cong</button>
+            <button onClick={() => setMapType('winding')} className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors ${mapType === 'winding' ? 'bg-orange-500 text-white shadow-md' : 'bg-white text-orange-600 hover:bg-orange-100'}`}>Uốn lượn</button>
+          </div>
+        </div>
+      )}
+
+      {/* Ducks List */}
       {!isRacing && !winner && ducks.length > 0 && (
         <div className="flex flex-wrap gap-3 mb-8">
           <AnimatePresence>
@@ -229,8 +269,9 @@ export default function DuckRace() {
                 
                 {/* Duck */}
                 <motion.div
-                  className="absolute left-0 flex flex-col items-center"
+                  className="absolute left-0 flex flex-col items-center z-20"
                   style={{ left: `calc(${duck.progress}% * 0.85)` }}
+                  animate={{ y: getDuckY(duck.progress, mapType) }}
                   transition={{ type: 'tween', ease: 'linear', duration: 0.1 }}
                 >
                   <div className={`text-xs font-bold px-2 py-0.5 rounded-full text-white mb-1 whitespace-nowrap shadow-sm ${duck.color}`}>

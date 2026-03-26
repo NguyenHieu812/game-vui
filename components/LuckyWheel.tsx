@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, RotateCcw, Plus, X, Sparkles } from 'lucide-react';
+import { Play, RotateCcw, Plus, X, Sparkles, BookOpen } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { playSound } from '@/lib/sounds';
 
@@ -188,7 +188,7 @@ export default function LuckyWheel() {
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border-4 border-purple-200 p-6 md:p-8 w-full">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
           <h2 className="text-3xl font-bold text-purple-600 flex items-center gap-2">
             <Sparkles className="w-8 h-8" />
@@ -196,8 +196,23 @@ export default function LuckyWheel() {
           </h2>
           <p className="text-slate-500 font-medium">Thêm tên và quay để tìm người may mắn!</p>
         </div>
+      </div>
 
-        {!isSpinning && !winner && (
+      {/* Instructions */}
+      <div className="bg-purple-50 text-purple-800 p-4 rounded-2xl mb-6 text-sm border border-purple-100">
+        <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" /> Hướng dẫn chơi:
+        </h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Nhập tên người chơi vào ô trống và ấn nút <strong>+</strong> (tối đa 12 người).</li>
+          <li>Ấn <strong>Quay ngay</strong> để bắt đầu vòng quay may mắn.</li>
+          <li>Mũi tên chỉ vào ai khi vòng quay dừng lại, người đó sẽ chiến thắng!</li>
+        </ul>
+      </div>
+
+      {/* Setup Area */}
+      {!isSpinning && !winner && (
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex items-center gap-2 w-full md:w-auto">
             <input
               type="text"
@@ -216,8 +231,8 @@ export default function LuckyWheel() {
               <Plus className="w-6 h-6" />
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-8 items-center justify-center mb-8">
         {/* Wheel Container */}
