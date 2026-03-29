@@ -6,8 +6,9 @@ import { Gamepad2, ArrowLeft } from 'lucide-react';
 import DuckRace from '@/components/DuckRace';
 import LuckyWheel from '@/components/LuckyWheel';
 import ShellGame from '@/components/ShellGame';
+import ZigzagDrop from '@/components/ZigzagDrop';
 
-type GameState = 'menu' | 'duck-race' | 'lucky-wheel' | 'shell-game';
+type GameState = 'menu' | 'duck-race' | 'lucky-wheel' | 'shell-game' | 'zigzag-drop';
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState>('menu');
@@ -67,6 +68,13 @@ export default function Home() {
                 color="bg-red-100 border-red-300 text-red-700"
                 onClick={() => setGameState('shell-game')}
               />
+              <GameCard
+                title="Thả Bóng Zick Zac"
+                description="Thả bóng rơi qua mê cung zick zac, ai xuống trước sẽ thắng!"
+                icon="🕹️"
+                color="bg-emerald-100 border-emerald-300 text-emerald-700"
+                onClick={() => setGameState('zigzag-drop')}
+              />
             </motion.div>
           )}
 
@@ -103,6 +111,18 @@ export default function Home() {
               className="w-full"
             >
               <ShellGame />
+            </motion.div>
+          )}
+
+          {gameState === 'zigzag-drop' && (
+            <motion.div
+              key="zigzag-drop"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full"
+            >
+              <ZigzagDrop />
             </motion.div>
           )}
         </AnimatePresence>

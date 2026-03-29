@@ -83,9 +83,7 @@ export default function LuckyWheel() {
     playSound('tick');
 
     // Calculate spin
-    // eslint-disable-next-line react-hooks/purity
     const spins = Math.floor(Math.random() * 5) + 5; // 5 to 10 full spins
-    // eslint-disable-next-line react-hooks/purity
     const randomDegree = Math.floor(Math.random() * 360);
     const totalRotation = rotation + (spins * 360) + randomDegree;
     
