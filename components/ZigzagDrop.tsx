@@ -191,9 +191,9 @@ export default function ZigzagDrop() {
       allFinished = false;
 
       // Physics
-      ball.vy += 0.2; // gravity
-      ball.vx *= 0.99; // friction
-      ball.vy *= 0.99;
+      ball.vy += 0.03; // gravity
+      ball.vx *= 0.98; // friction
+      ball.vy *= 0.98;
 
       ball.x += ball.vx;
       ball.y += ball.vy;
@@ -225,11 +225,11 @@ export default function ZigzagDrop() {
           const nx = dx / dist;
           const ny = dy / dist;
           const p = 2 * (ball.vx * nx + ball.vy * ny) / 2;
-          ball.vx = ball.vx - p * nx * 0.7;
-          ball.vy = ball.vy - p * ny * 0.7;
+          ball.vx = ball.vx - p * nx * 0.6;
+          ball.vy = ball.vy - p * ny * 0.6;
 
           // Add some randomness
-          ball.vx += (Math.random() - 0.5) * 2;
+          ball.vx += (Math.random() - 0.5) * 0.8;
           
           if (!playedTick && Math.random() > 0.8) {
             playSound('tick');

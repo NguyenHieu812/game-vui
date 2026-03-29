@@ -67,7 +67,7 @@ export default function DuckRace() {
       id: Math.random().toString(36).substring(7),
       name: newName.trim(),
       progress: 0,
-      speed: Math.random() * 0.5 + 0.2, // Random base speed
+      speed: Math.random() * 0.1 + 0.05, // Random base speed
       color: DUCK_COLORS[ducks.length % DUCK_COLORS.length]
     };
     
@@ -89,7 +89,7 @@ export default function DuckRace() {
     setDucks(ducks.map(d => ({
       ...d,
       progress: 0,
-      speed: Math.random() * 0.4 + 0.2
+      speed: Math.random() * 0.1 + 0.05
     })));
     
     setWinner(null);
@@ -117,20 +117,36 @@ export default function DuckRace() {
       setDucks(prevDucks => {
         let hasWinner = false;
         let winningDuck: Duck | null = null;
+        
+        const maxProgress = Math.max(...prevDucks.map(d => d.progress));
 
         const updatedDucks = prevDucks.map(duck => {
           if (hasWinner) return duck; // Stop updating if someone won
 
-          // Add some randomness to the speed each frame
-          const speedBoost = Math.random() > 0.9 ? Math.random() * 0.5 : 0;
-          const newProgress = Math.min(100, duck.progress + (duck.speed + speedBoost) * (deltaTime / 16));
+          // Randomly change base speed to simulate bursts of energy
+          let newSpeed = duck.speed;
+          if (Math.random() < 0.02) { // 2% chance per frame to change pace
+            newSpeed = Math.random() * 0.1 + 0.05;
+          }
+          
+          // Late game drama: wild speed changes near the finish line
+          if (maxProgress > 70 && Math.random() < 0.05) {
+            newSpeed = Math.random() * 0.2 + 0.02; // Can sprint or stumble
+          }
+
+          // Catch-up mechanic: ducks behind get a boost
+          const distanceBehind = maxProgress - duck.progress;
+          const catchUpBoost = distanceBehind > 5 ? (distanceBehind * 0.004) : 0;
+
+          const currentFrameSpeed = Math.max(0.02, newSpeed + catchUpBoost);
+          const newProgress = Math.min(100, duck.progress + currentFrameSpeed * (deltaTime / 16));
 
           if (newProgress >= 100 && !hasWinner) {
             hasWinner = true;
             winningDuck = { ...duck, progress: 100 };
           }
 
-          return { ...duck, progress: newProgress };
+          return { ...duck, progress: newProgress, speed: newSpeed };
         });
 
         if (hasWinner && winningDuck) {
