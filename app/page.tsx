@@ -7,8 +7,9 @@ import DuckRace from '@/components/DuckRace';
 import LuckyWheel from '@/components/LuckyWheel';
 import ShellGame from '@/components/ShellGame';
 import ZigzagDrop from '@/components/ZigzagDrop';
+import MemoryGame from '@/components/MemoryGame';
 
-type GameState = 'menu' | 'duck-race' | 'lucky-wheel' | 'shell-game' | 'zigzag-drop';
+type GameState = 'menu' | 'duck-race' | 'lucky-wheel' | 'shell-game' | 'zigzag-drop' | 'memory-game';
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState>('menu');
@@ -75,6 +76,13 @@ export default function Home() {
                 color="bg-emerald-100 border-emerald-300 text-emerald-700"
                 onClick={() => setGameState('zigzag-drop')}
               />
+              <GameCard
+                title="Lật Thẻ Ghi Nhớ"
+                description="Ghi nhớ và tìm các cặp số giống nhau trước khi hết giờ!"
+                icon="🧠"
+                color="bg-blue-100 border-blue-300 text-blue-700"
+                onClick={() => setGameState('memory-game')}
+              />
             </motion.div>
           )}
 
@@ -123,6 +131,18 @@ export default function Home() {
               className="w-full"
             >
               <ZigzagDrop />
+            </motion.div>
+          )}
+
+          {gameState === 'memory-game' && (
+            <motion.div
+              key="memory-game"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full"
+            >
+              <MemoryGame />
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,6 +1,9 @@
 import type {Metadata} from 'next';
-import { Quicksand } from 'next/font/google';
-import './globals.css'; // Global styles
+import { Quicksand, Geist } from 'next/font/google';
+import './globals.css';
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const quicksand = Quicksand({
   subsets: ['latin', 'vietnamese'],
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en" className={`${quicksand.variable}`}>
+    <html lang="en" className={cn(quicksand.variable, "font-sans", geist.variable)}>
       <body className="font-quicksand antialiased bg-blue-50 text-slate-800 min-h-screen" suppressHydrationWarning>
         {children}
       </body>

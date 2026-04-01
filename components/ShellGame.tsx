@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, HelpCircle, BookOpen } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { playSound } from '@/lib/sounds';
 
 type GameState = 'setup' | 'hiding' | 'shuffling' | 'guessing' | 'won' | 'lost';
@@ -14,7 +13,8 @@ interface Cup {
   isRevealed: boolean;
 }
 
-const triggerConfetti = () => {
+const triggerConfetti = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 3000;
   const end = Date.now() + duration;
 
@@ -101,7 +101,7 @@ export default function ShellGame() {
     if (cups[cupIndex].isRevealed) return;
 
     const newCups = [...cups];
-    newCups[cupIndex].isRevealed = true;
+    newCups[cupIndex] = { ...newCups[cupIndex], isRevealed: true };
     setCups(newCups);
 
     if (newCups[cupIndex].hasBall) {

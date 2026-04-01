@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Plus, X, Trophy, Flag, BookOpen, Map } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { playSound, startRaceMusic, stopRaceMusic } from '@/lib/sounds';
 
 type MapType = 'straight' | 'curved' | 'winding';
@@ -21,7 +20,8 @@ const DUCK_COLORS = [
   'bg-purple-400', 'bg-pink-400', 'bg-orange-400', 'bg-teal-400'
 ];
 
-const triggerConfetti = () => {
+const triggerConfetti = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 3000;
   const end = Date.now() + duration;
 

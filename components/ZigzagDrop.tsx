@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Plus, X, ArrowDown, BookOpen } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { playSound } from '@/lib/sounds';
 
 interface Player {
@@ -42,7 +41,8 @@ interface Obstacle {
   timer: number;
 }
 
-const triggerConfetti = () => {
+const triggerConfetti = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 3000;
   const end = Date.now() + duration;
 

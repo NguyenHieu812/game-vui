@@ -3,7 +3,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, RotateCcw, Plus, X, Sparkles, BookOpen } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { playSound } from '@/lib/sounds';
 
 interface Player {
@@ -17,7 +16,8 @@ const WHEEL_COLORS = [
   '#c084fc', '#f472b6', '#fb923c', '#2dd4bf'
 ];
 
-const triggerConfetti = () => {
+const triggerConfetti = async () => {
+  const confetti = (await import('canvas-confetti')).default;
   const duration = 3000;
   const end = Date.now() + duration;
 
